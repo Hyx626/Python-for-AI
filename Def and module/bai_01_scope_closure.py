@@ -7,14 +7,17 @@
 # ---------------------------------------------------------------
 counter = 0
 
+
 def read_only():
-    print(counter)            # OK: chỉ đọc, Python tìm theo LEGB và thấy global
+    print(counter)  # OK: chỉ đọc, Python tìm theo LEGB và thấy global
+
 
 def broken():
     try:
-        counter += 1          # ❌ lỗi!
+        counter += 1  # ❌ lỗi!
     except UnboundLocalError as e:
         print("Lỗi:", e)
+
 
 read_only()
 broken()
@@ -34,9 +37,10 @@ def increase():
     global counter
     counter += 1
 
+
 increase()
 increase()
-print("counter =", counter)   # 2
+print("counter =", counter)  # 2
 
 # ⚠️ Lời khuyên của chị: ĐỪNG lạm dụng global. Hàm dùng global khó test,
 # khó đọc, dễ gây lỗi khó tìm. Hàm tốt = nhận input qua tham số, trả output
@@ -48,11 +52,14 @@ print("counter =", counter)   # 2
 # ---------------------------------------------------------------
 def outer():
     x = "enclosing"
+
     def inner():
-        nonlocal x            # x này là x của outer, không phải tạo x mới
+        nonlocal x  # x này là x của outer, không phải tạo x mới
         x = "đã bị inner sửa"
+
     inner()
-    print(x)                  # đã bị inner sửa
+    print(x)  # đã bị inner sửa
+
 
 outer()
 
@@ -61,36 +68,41 @@ outer()
 # 4. CLOSURE: hàm "nhớ" biến của nơi nó được tạo ra
 # ---------------------------------------------------------------
 def make_counter():
-    count = 0                 # biến của make_counter
+    count = 0  # biến của make_counter
+
     def tick():
         nonlocal count
         count += 1
         return count
-    return tick               # trả về HÀM tick, chưa gọi nó
+
+    return tick  # trả về HÀM tick, chưa gọi nó
+
 
 c1 = make_counter()
 c2 = make_counter()
-print(c1(), c1(), c1())       # 1 2 3
-print(c2())                   # 1  <- c2 có count riêng, độc lập với c1
+print(c1(), c1(), c1())  # 1 2 3
+print(c2())  # 1  <- c2 có count riêng, độc lập với c1
 
 # 🧠 Logic note:
 # make_counter() chạy xong thì lẽ ra `count` biến mất. Nhưng tick vẫn dùng nó,
 # nên Python giữ `count` sống cùng tick. Cặp (hàm + biến nó nhớ) = closure.
 # Em xem được biến nó nhớ bằng:
-print(c1.__closure__[0].cell_contents)   # 3
+print(c1.__closure__[0].cell_contents)  # 3
 # Bài 2 (decorator) xây hoàn toàn trên closure, em hiểu chắc bài này nhé.
 
 
 # ---------------------------------------------------------------
 # 5. Bẫy kinh điển: closure trong vòng lặp
 # ---------------------------------------------------------------
-funcs = []
-for i in range(3):
-    funcs.append(lambda: i)
-print([f() for f in funcs])   # [2, 2, 2]  ← em có thể mong [0, 1, 2]
+# funcs = []
+# for i in range(3):
+#     funcs.append(lambda: i)
+# print([f() for f in funcs])  # [2, 2, 2]  ← em có thể mong [0, 1, 2]
 
-# Vì sao? Các lambda đều nhớ BIẾN i (không phải GIÁ TRỊ của i lúc tạo).
-# Đến lúc gọi thì vòng lặp đã xong, i = 2.
-# Cách sửa: "chốt" giá trị lúc tạo bằng tham số mặc định
-funcs = [lambda i=i: i for i in range(3)]
-print([f() for f in funcs])   # [0, 1, 2]
+# # Vì sao? Các lambda đều nhớ BIẾN i (không phải GIÁ TRỊ của i lúc tạo).
+# # Đến lúc gọi thì vòng lặp đã xong, i = 2.
+# # Cách sửa: "chốt" giá trị lúc tạo bằng tham số mặc định
+# funcs = [lambda i=i: i for i in range(3)]
+# print([f() for f in funcs])  # [0, 1, 2]
+
+

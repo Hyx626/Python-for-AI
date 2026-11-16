@@ -8,13 +8,21 @@ import functools
 
 # Bài 1 (closure): make_multiplier(3) trả về một hàm nhân đối số với 3.
 def make_multiplier(factor):
-    pass
+    def multiplier(x):
+        return x * factor
+    return multiplier
+
 
 
 # Bài 2 (nonlocal): make_accumulator() trả về hàm; mỗi lần gọi acc(x) cộng x
 # vào tổng đang nhớ và trả về tổng mới. Không dùng global.
 def make_accumulator():
-    pass
+    total = 0
+    def acc(x):
+        nonlocal total
+        total += x
+        return total
+    return acc
 
 
 # Bài 3 (decorator): count_calls đếm số lần hàm bị gọi, lưu ở wrapper.calls
